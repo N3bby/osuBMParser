@@ -5,52 +5,50 @@ namespace osuBMParser
 {
     public class Beatmap
     {
-
-        //Test
-
+        
         #region fields
         #region extra
-        public string formatVersion { get; set; }
+        public string FormatVersion { get; set; }
         #endregion
 
         #region general        
-        public string audioFileName { get; set; }
-        public int audioLeadIn { get; set; }
-        public int previewTime { get; set; }
-        public bool countdown { get; set; }
-        public string sampleSet { get; set; }
-        public float stackLeniency { get; set; }
-        public int mode { get; set; }
-        public bool letterBoxInBreaks { get; set; }
-        public bool widescreenStoryboard { get; set; }
+        public string AudioFileName { get; set; }
+        public int AudioLeadIn { get; set; }
+        public int PreviewTime { get; set; }
+        public bool Countdown { get; set; }
+        public string SampleSet { get; set; }
+        public float StackLeniency { get; set; }
+        public int Mode { get; set; }
+        public bool LetterBoxInBreaks { get; set; }
+        public bool WidescreenStoryboard { get; set; }
         #endregion
 
         #region editor
-        public List<int> bookmarks { get; set; }
-        public float distanceSpacing { get; set; }
-        public int beatDivisor { get; set; }
-        public int gridSize { get; set; }
-        public int timelineZoom { get; set; }
+        public List<int> Bookmarks { get; set; }
+        public float DistanceSpacing { get; set; }
+        public int BeatDivisor { get; set; }
+        public int GridSize { get; set; }
+        public int TimelineZoom { get; set; }
         #endregion
 
         #region metadata
-        public string title { get; set; }
-        public string artist { get; set; }
-        public string creator { get; set; }
-        public string version { get; set; }
-        public string source { get; set; }
-        public List<string> tags { get; set; }        
-        public int beatmapID { get; set; }
-        public int beatmapSetID { get; set; }
+        public string Title { get; set; }
+        public string Artist { get; set; }
+        public string Creator { get; set; }
+        public string Version { get; set; }
+        public string Source { get; set; }
+        public List<string> Tags { get; set; }        
+        public int BeatmapID { get; set; }
+        public int BeatmapSetID { get; set; }
         #endregion
 
         #region difficulty
-        public float hpDrainRate { get; set; }
-        public float circleSize { get; set; }
-        public float overallDifficulty { get; set; }
-        public float approachRate { get; set; }
-        public float sliderMultiplier { get; set; }
-        public float sliderTickRate { get; set; }
+        public float HpDrainRate { get; set; }
+        public float CircleSize { get; set; }
+        public float OverallDifficulty { get; set; }
+        public float ApproachRate { get; set; }
+        public float SliderMultiplier { get; set; }
+        public float SliderTickRate { get; set; }
         #endregion
 
         #region events
@@ -58,15 +56,15 @@ namespace osuBMParser
         #endregion
 
         #region timingPoints
-        public List<TimingPoint> timingPoints { get; set; }        
+        public List<TimingPoint> TimingPoints { get; set; }        
         #endregion
 
         #region colours
-        public List<ComboColour> colours { get; set; }      
+        public List<ComboColour> Colours { get; set; }      
         #endregion
 
         #region hitObjects 
-        public List<HitObject> hitObjects { get; set; }
+        public List<HitObject> HitObjects { get; set; }
         #endregion
         #endregion
 
@@ -92,11 +90,11 @@ namespace osuBMParser
         #region methods
         public void init()
         {
-            bookmarks = new List<int>();
-            tags = new List<string>();
-            timingPoints = new List<TimingPoint>();
-            colours = new List<ComboColour>();
-            hitObjects = new List<HitObject>();
+            Bookmarks = new List<int>();
+            Tags = new List<string>();
+            TimingPoints = new List<TimingPoint>();
+            Colours = new List<ComboColour>();
+            HitObjects = new List<HitObject>();
         }
         #endregion
 

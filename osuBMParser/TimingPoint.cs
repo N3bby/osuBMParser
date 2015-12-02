@@ -22,6 +22,8 @@ namespace osuBMParser
         #endregion
 
         #region constructors
+        public TimingPoint() { }
+
         public TimingPoint(int offset, float msPerBeat, int meter, int sampleType, int sampleSet, int volume, bool inherited, bool kiaiMode)
         {
             this.offset = offset;

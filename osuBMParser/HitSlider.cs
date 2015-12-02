@@ -11,39 +11,45 @@ namespace osuBMParser
 
         public enum SliderType
         {
-            NULL,
+            NONE,
             BREZIER,
             CATMULL,
-            LINEAR
+            LINEAR,
+            PASSTHROUGH
         }
 
         #region fields
-        public SliderType sliderType { get; set; }
-        List<HitSliderSegment> hitSliderSegments { get; set; }
-        public int repeat { get; set; }
-        public float pixelLength { get; set; }
-        public int edgeHitSound { get; set; }
-        public List<int> edgeAddition { get; set; }
+        public SliderType Type { get; set; }
+        public List<HitSliderSegment> HitSliderSegments { get; set; }
+        public int Repeat { get; set; }
+        public float PixelLength { get; set; }
+        public int EdgeHitSound { get; set; }
+        public List<int> EdgeAddition { get; set; }
         #endregion
 
         #region constructors
-        public HitSlider(Vector2 position, int time, int hitSound, SliderType sliderType, HitSliderSegment[] hitSliderSegments, int repeat, float pixelLength, int edgeHitSound, int[] edgeAddition, int[] addition, bool isNewCombo) : base(position, time, hitSound, addition, isNewCombo)
+        public HitSlider()
         {
             init();
-            this.sliderType = sliderType;
-            this.hitSliderSegments.AddRange(hitSliderSegments);
-            this.repeat = repeat;
-            this.pixelLength = pixelLength;
-            this.edgeHitSound = edgeHitSound;
-            this.edgeAddition.AddRange(edgeAddition);
+        }
+
+        public HitSlider(Vector2 position, int time, int hitSound, SliderType type, HitSliderSegment[] hitSliderSegments, int repeat, float pixelLength, int edgeHitSound, int[] edgeAddition, int[] addition, bool isNewCombo) : base(position, time, hitSound, addition, isNewCombo)
+        {
+            init();
+            this.Type = type;
+            this.HitSliderSegments.AddRange(hitSliderSegments);
+            this.Repeat = repeat;
+            this.PixelLength = pixelLength;
+            this.EdgeHitSound = edgeHitSound;
+            this.EdgeAddition.AddRange(edgeAddition);
         }
         #endregion
 
         #region methods
         private void init()
         {
-            hitSliderSegments = new List<HitSliderSegment>();
-            edgeAddition = new List<int>();
+            HitSliderSegments = new List<HitSliderSegment>();
+            EdgeAddition = new List<int>();
         }
 
         public static SliderType parseSliderType(string data)
@@ -56,8 +62,10 @@ namespace osuBMParser
                     return SliderType.CATMULL;
                 case "l":
                     return SliderType.LINEAR;
+                case "p":
+                    return SliderType.PASSTHROUGH;
                 default:
-                    return SliderType.NULL;
+                    return SliderType.NONE;
             }
         }
         #endregion

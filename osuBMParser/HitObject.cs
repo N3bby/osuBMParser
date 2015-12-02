@@ -10,30 +10,34 @@ namespace osuBMParser
     {
 
         #region fields
-        public Vector2 position { get; set; }
-        public int time { get; set; }
-        public int hitSound { get; set; }
-        public List<int> addition { get; set; }
-        public bool isNewCombo { get; set; }
+        public Vector2 Position { get; set; }
+        public int Time { get; set; }
+        public int HitSound { get; set; }
+        public List<int> Addition { get; set; }
+        public bool IsNewCombo { get; set; }
         #endregion
 
         #region constructors
-        public HitObject(Vector2 position, int time, int hitSound, int[] addition, bool isNewCombo)
+        public HitObject()
         {
             init();
-            this.position = position;
-            this.time = time;
-            this.hitSound = hitSound;
-            this.addition.AddRange(addition);
-            this.isNewCombo = isNewCombo;
+        }
+
+        public HitObject(Vector2 position, int time, int hitSound, int[] addition, bool isNewCombo) : this()
+        {
+            this.Position = position;
+            this.Time = time;
+            this.HitSound = hitSound;
+            this.Addition.AddRange(addition);
+            this.IsNewCombo = isNewCombo;
         }
         #endregion
 
         #region methods
         private void init()
         {
-            position = new Vector2();
-            addition = new List<int>();
+            Position = new Vector2();
+            Addition = new List<int>();
         }
         #endregion
 
