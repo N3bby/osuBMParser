@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace osuBMParser
 {
@@ -73,17 +74,17 @@ namespace osuBMParser
         {
             init();
         }
-
-        public Beatmap(Beatmap beatmap)
-        {
-            //Needs to be done...
-        }
-
+        
         public Beatmap(string path) : this()
         {
-            System.Diagnostics.Debug.WriteLine("Parsing: " + path);
             OsuFileParser parser = new OsuFileParser(path, this);
             parser.parse();
+        }
+
+        public Beatmap(string path, OsuFileParser.OsuFileSection sections) : this()
+        {
+            OsuFileParser parser = new OsuFileParser(path, this);
+            parser.parse(sections);
         }
         #endregion
 

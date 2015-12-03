@@ -11,14 +11,14 @@ namespace osuBMParser
     {
 
         #region fields
-        public int offset { get; set; }
-        public float msPerBeat { get; set; }
-        public int meter { get; set; }
-        public int sampleType { get; set; }
-        public int sampleSet { get; set; }
-        public int volume { get; set; }
-        public bool inherited { get; set; }
-        public bool kiaiMode { get; set; }
+        public int Offset { get; set; }
+        public float MsPerBeat { get; set; }
+        public int Meter { get; set; }
+        public int SampleType { get; set; }
+        public int SampleSet { get; set; }
+        public int Volume { get; set; }
+        public bool Inherited { get; set; }
+        public bool KiaiMode { get; set; }
         #endregion
 
         #region constructors
@@ -26,14 +26,14 @@ namespace osuBMParser
 
         public TimingPoint(int offset, float msPerBeat, int meter, int sampleType, int sampleSet, int volume, bool inherited, bool kiaiMode)
         {
-            this.offset = offset;
-            this.msPerBeat = msPerBeat;
-            this.meter = meter;
-            this.sampleType = sampleType;
-            this.sampleSet = sampleSet;
-            this.volume = volume;
-            this.inherited = inherited;
-            this.kiaiMode = kiaiMode;
+            this.Offset = offset;
+            this.MsPerBeat = msPerBeat;
+            this.Meter = meter;
+            this.SampleType = sampleType;
+            this.SampleSet = sampleSet;
+            this.Volume = volume;
+            this.Inherited = inherited;
+            this.KiaiMode = kiaiMode;
         }
         #endregion
 

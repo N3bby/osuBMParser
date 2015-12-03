@@ -32,7 +32,7 @@ namespace osuBMParser
         {
             init();
         }
-
+        
         public HitSlider(Vector2 position, int time, int hitSound, SliderType type, HitSliderSegment[] hitSliderSegments, int repeat, float pixelLength, int edgeHitSound, int[] edgeAddition, int[] addition, bool isNewCombo) : base(position, time, hitSound, addition, isNewCombo)
         {
             init();

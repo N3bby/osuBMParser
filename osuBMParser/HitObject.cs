@@ -22,9 +22,9 @@ namespace osuBMParser
         {
             init();
         }
-
+        
         public HitObject(Vector2 position, int time, int hitSound, int[] addition, bool isNewCombo) : this()
-        {
+        {   
             this.Position = position;
             this.Time = time;
             this.HitSound = hitSound;
