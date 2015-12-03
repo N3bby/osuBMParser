@@ -18,11 +18,13 @@ To parse a beatmap (.osu) file, use the following code:
 The Beatmap object will contain all properties found on this webpage (including lists with HitObjects, TimingPoints, etc.):
 https://osu.ppy.sh/wiki/Osu_(file_format)
 
+## New Changes
+* You can now use bitwise operations for parsing certain sections of a beatmap (use OsuFileParser.OsuFileSection enum). Use the new Beatmap constructor for this behaviour.
+* Default values are now set correctly.
+* Removed parsing for additions, edgeAdditions and hitsounds (was not working correctly on newer beatmaps).
+
 ## To-do List
-* Calculate time offset for HitSliderSegments
-* Add classes for Brezier, Catmull and Linear curves for calculating positions that are in between HitSliderSegments.
-* Figure out how the hitSounds work
-* Figure out how additions and edgeAdditions work
-* Add code for writing Beatmap object back to a file
-* Parse the "Event" section of beatmap files.
-* Figure out default values for some propery settings (for example AR)
+* Calculate end time for HitSliders.
+* Hitsounds, additions and edgeAdditions currently don't work, since I can't find any info on them.
+* Add code for writing Beatmap object back to a file?
+* Parse the "Event" section of beatmap files?
