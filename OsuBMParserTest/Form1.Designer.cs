@@ -34,17 +34,20 @@
             // propertyGrid1
             // 
             this.propertyGrid1.CategoryForeColor = System.Drawing.SystemColors.InactiveCaptionText;
-            this.propertyGrid1.Location = new System.Drawing.Point(4, 5);
-            this.propertyGrid1.Margin = new System.Windows.Forms.Padding(1, 1, 1, 1);
+            this.propertyGrid1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.propertyGrid1.Location = new System.Drawing.Point(10, 10);
+            this.propertyGrid1.Margin = new System.Windows.Forms.Padding(1);
             this.propertyGrid1.Name = "propertyGrid1";
-            this.propertyGrid1.Size = new System.Drawing.Size(338, 423);
+            this.propertyGrid1.Size = new System.Drawing.Size(464, 641);
             this.propertyGrid1.TabIndex = 0;
+            this.propertyGrid1.UseCompatibleTextRendering = true;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(347, 438);
+            this.AutoSize = true;
+            this.ClientSize = new System.Drawing.Size(484, 661);
             this.Controls.Add(this.propertyGrid1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Name = "Form1";
