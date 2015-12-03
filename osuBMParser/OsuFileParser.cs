@@ -12,19 +12,24 @@ namespace osuBMParser
     public class OsuFileParser
     {
 
+        [Flags]
         public enum OsuFileSection
         {
-            NONE,
-            FORMAT,
-            GENERAL,
-            EDITOR,
-            METADATA,
-            DIFFICULTY,
-            EVENTS,
-            TIMINGPOINTS,
-            COLOURS,
-            HITOBJECTS
+            NONE = 0,
+            FORMAT = 1 << 0,
+            GENERAL = 1 << 1,
+            EDITOR = 1 << 2,
+            METADATA = 1 << 3,
+            DIFFICULTY = 1 << 4,
+            EVENTS = 1 << 5,
+            TIMINGPOINTS = 1 << 6,
+            COLOURS = 1 << 7,
+            HITOBJECTS = 1 << 8
         }
+
+        public OsuFileSection entireFile = OsuFileSection.FORMAT | OsuFileSection.GENERAL |
+            OsuFileSection.EDITOR | OsuFileSection.METADATA | OsuFileSection.DIFFICULTY | OsuFileSection.EVENTS |
+            OsuFileSection.TIMINGPOINTS | OsuFileSection.COLOURS | OsuFileSection.HITOBJECTS;
 
         #region fields
         private Beatmap beatmap;
@@ -41,6 +46,11 @@ namespace osuBMParser
 
         #region methods
         internal void parse()
+        {
+            parse(entireFile);
+        }
+
+        internal void parse(OsuFileSection sections)
         {
 
             //Read in file. Exceptions here are to be handled by the devs who use this library.
@@ -68,15 +78,35 @@ namespace osuBMParser
                     {
                         currentSection = sectionTest;
                     }
-                    else
+                    //If the currentSection is a member of sections (user-defined), parse it
+                    else if ((currentSection & sections) == currentSection)
                     {
+                        Debug.WriteLine("Parsing" + currentSection.ToString());
                         parseLine(currentSection, line);
                     }
                 }
             }
 
-            //TODO:
-            //Calculate time values for HitSliderSegments. First do some research on brezier curves for this :p
+            //Process default values (if they were not set)
+
+            //General
+            if (beatmap.PreviewTime == 0) beatmap.PreviewTime = -1;
+            if (String.IsNullOrWhiteSpace(beatmap.SampleSet)) beatmap.SampleSet = "Normal";
+            if (beatmap.StackLeniency == 0) beatmap.StackLeniency = 0.7f;
+
+            //Editor
+            if (beatmap.DistanceSpacing == 0) beatmap.DistanceSpacing = 1f;
+            if (beatmap.BeatDivisor == 0) beatmap.BeatDivisor = 4;
+            if (beatmap.GridSize == 0) beatmap.GridSize = 4;
+            if (beatmap.TimelineZoom == 0) beatmap.TimelineZoom = 1;
+
+            //Difficulty
+            if (beatmap.HpDrainRate == 0) beatmap.HpDrainRate = 5f;
+            if (beatmap.CircleSize == 0) beatmap.CircleSize = 5f;
+            if (beatmap.OverallDifficulty == 0) beatmap.OverallDifficulty = 5f;
+            if (beatmap.ApproachRate == 0) beatmap.ApproachRate = beatmap.OverallDifficulty;
+            if (beatmap.SliderMultiplier == 0) beatmap.SliderMultiplier = 1.4f;
+            if (beatmap.SliderTickRate == 0) beatmap.SliderTickRate = 1f;
 
             Debug.WriteLine("osuBMParser: Finished beatmap parsing");
 
@@ -122,14 +152,19 @@ namespace osuBMParser
 
             switch (tokens[0].ToLower().Trim())
             {
-                //Different parsing method (list)
                 case "bookmarks":
-                    beatmap.Bookmarks.AddRange(Array.ConvertAll(tokens[1].Split(','), int.Parse));
+                case "editorbookmarks": //From old file format (v5)
+                    beatmap.Bookmarks.AddRange(Array.ConvertAll(tokens[1].Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries), int.Parse));
                     break;
-                //Different parsing method (list)
+
                 case "tags":
-                    if (tokens[1] != null) beatmap.Tags.AddRange(tokens[1].Split(' '));
+                    if (tokens[1] != null) beatmap.Tags.AddRange(tokens[1].Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries));
                     break;
+
+                case "editordistancespacing": //From old file format (v5)
+                    beatmap.DistanceSpacing = toFloat(tokens[1]);
+                    break;
+
                 default:
                     //Use reflection to set property values
                     PropertyInfo property = beatmap.GetType().GetProperty(tokens[0], BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
@@ -160,37 +195,48 @@ namespace osuBMParser
 
             string[] tokens = data.Split(',');
 
-            tokens = getArrayWithSize(tokens, 8);
+            if (tokens.Length < 8)
+            {
+                Debug.WriteLine("osuBMParser: Invalid TimingPoint line, no further information available");
+                return;
+            }
 
-            beatmap.TimingPoints.Add(new TimingPoint(
-                toInt(tokens[0]),
-                toFloat(tokens[1]),
-                toInt(tokens[2]),
-                toInt(tokens[3]),
-                toInt(tokens[4]),
-                toInt(tokens[5]),
-                toBool(tokens[6]),
-                toBool(tokens[7])));
+            TimingPoint timingPoint = new TimingPoint();
+
+            if (tokens[0] != null) timingPoint.Offset = toInt(tokens[0]);
+            if (tokens[1] != null) timingPoint.MsPerBeat = toFloat(tokens[1]);
+            if (tokens[2] != null) timingPoint.Meter = toInt(tokens[2]);
+            if (tokens[3] != null) timingPoint.SampleType = toInt(tokens[3]);
+            if (tokens[4] != null) timingPoint.SampleSet = toInt(tokens[4]);
+            if (tokens[5] != null) timingPoint.Volume = toInt(tokens[5]);
+            if (tokens[6] != null) timingPoint.Inherited = toBool(tokens[6]);
+            if (tokens[7] != null) timingPoint.KiaiMode = toBool(tokens[7]);
+
+            beatmap.TimingPoints.Add(timingPoint);
 
         }
 
         private void colourParse(string data)
         {
-            if (data.Trim() != "")
+            string[] tokens = data.Split(':');
+            if (tokens.Length >= 2) 
             {
-                string[] tokens = data.Split(':')[1].Split(',');
-                beatmap.Colours.Add(new ComboColour(byte.Parse(tokens[0]), byte.Parse(tokens[1]), byte.Parse(tokens[2])));
+                string[] colourValues = tokens[1].Split(',');
+                if (colourValues.Length >= 3)
+                {
+                    beatmap.Colours.Add(new ComboColour(byte.Parse(colourValues[0]), byte.Parse(colourValues[1]), byte.Parse(colourValues[2])));
+                }
             }
         }
 
         private void hitObjectParse(string data)
-        {   
+        {
 
             string[] tokens = data.Split(',');
 
             if (tokens.Length < 5)
             {
-                Debug.WriteLine("osuBMParser: Invalid HitObject line, no information available");
+                Debug.WriteLine("osuBMParser: Invalid HitObject line, no further information available");
                 return; //Not possible to have less arguments than this
             }
 
@@ -225,7 +271,7 @@ namespace osuBMParser
             //Global stuff first
             hitObject.Position = new Vector2(toFloat(tokens[0]), toFloat(tokens[1]));
             hitObject.Time = toInt(tokens[2]);
-            hitObject.HitSound = toInt(tokens[4]);
+            //hitObject.HitSound = toInt(tokens[4]);
             hitObject.IsNewCombo = typeBits[2];
 
             //Specific stuff
@@ -235,7 +281,7 @@ namespace osuBMParser
 
                 if (tokens.Length >= 6 && tokens[5] != null) //Additions
                 {
-                    hitObject.Addition = new List<int>(getAdditionsAsIntArray(tokens[5]));
+                    //hitObject.Addition = new List<int>(getAdditionsAsIntArray(tokens[5]));
                 }
 
             }
@@ -243,43 +289,43 @@ namespace osuBMParser
             if (hitObject is HitSlider)
             {
 
-                if(tokens.Length >= 6 && tokens[5] != null) //SliderType and HitSliderSegments
+                if (tokens.Length >= 6 && tokens[5] != null) //SliderType and HitSliderSegments
                 {
                     string[] hitSliderSegments = tokens[5].Split('|');
                     ((HitSlider)hitObject).Type = HitSlider.parseSliderType(hitSliderSegments[0]);
                     foreach (string hitSliderSegmentPosition in hitSliderSegments.Skip(1))
                     {
                         string[] positionTokens = hitSliderSegmentPosition.Split(':');
-                        if(positionTokens.Length == 2)
+                        if (positionTokens.Length == 2)
                         {
                             ((HitSlider)hitObject).HitSliderSegments.Add(new HitSliderSegment(new Vector2(toFloat(positionTokens[0]), toFloat(positionTokens[1]))));
                         }
                     }
                 }
 
-                if(tokens.Length >= 7 && tokens[6] != null)
+                if (tokens.Length >= 7 && tokens[6] != null)
                 {
                     ((HitSlider)hitObject).Repeat = toInt(tokens[6]);
                 }
 
-                if(tokens.Length >= 8 && tokens[7] != null)
+                if (tokens.Length >= 8 && tokens[7] != null)
                 {
                     ((HitSlider)hitObject).PixelLength = toFloat(tokens[7]);
                 }
 
-                if(tokens.Length >= 9 && tokens[8] != null)
+                if (tokens.Length >= 9 && tokens[8] != null)
                 {
-                    ((HitSlider)hitObject).EdgeHitSound = toInt(tokens[8]);
+                    //((HitSlider)hitObject).EdgeHitSound = toInt(tokens[8]);
                 }
 
-                if(tokens.Length >= 10 && tokens[9] != null)
+                if (tokens.Length >= 10 && tokens[9] != null)
                 {
-                    ((HitSlider)hitObject).EdgeAddition = new List<int>(getAdditionsAsIntArray(tokens[9]));
+                    //((HitSlider)hitObject).EdgeAddition = new List<int>(getAdditionsAsIntArray(tokens[9]));
                 }
 
-                if(tokens.Length >= 11 && tokens[10] != null)
+                if (tokens.Length >= 11 && tokens[10] != null)
                 {
-                    hitObject.Addition = new List<int>(getAdditionsAsIntArray(tokens[10]));
+                    //hitObject.Addition = new List<int>(getAdditionsAsIntArray(tokens[10]));
                 }
 
             }
@@ -287,14 +333,14 @@ namespace osuBMParser
             if (hitObject is HitSpinner)
             {
 
-                if(tokens.Length >= 6 && tokens[5] != null)
+                if (tokens.Length >= 6 && tokens[5] != null)
                 {
                     ((HitSpinner)hitObject).EndTime = toInt(tokens[5]);
                 }
 
-                if(tokens.Length >= 7 && tokens[6] != null)
+                if (tokens.Length >= 7 && tokens[6] != null)
                 {
-                    hitObject.Addition = new List<int>(getAdditionsAsIntArray(tokens[6]));
+                    //hitObject.Addition = new List<int>(getAdditionsAsIntArray(tokens[6]));
                 }
 
             }
@@ -309,27 +355,17 @@ namespace osuBMParser
             int[] additions = new int[0];
             try
             {
-                additions = Array.ConvertAll(additionToken.Split(':'), int.Parse);
+                additions = Array.ConvertAll(additionToken.Split(new string[] { ":" }, StringSplitOptions.RemoveEmptyEntries), int.Parse);
             }
-            catch { }
+            catch
+            {
+                throw;
+            }
             return additions;
 
         }
         #endregion
-
-        private string[] getArrayWithSize(string[] data, int size)
-        {
-            if (data.Length > size)
-            {
-                return new List<string>(data).GetRange(0, size - 1).ToArray();
-            }
-            else
-            {
-                return new List<string>(data).Concat(Enumerable.Repeat("0", size - data.Length)).ToArray();
-            }
-
-        }
-
+        
         private int toInt(string data)
         {
             int result;
