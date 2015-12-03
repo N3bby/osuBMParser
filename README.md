@@ -14,7 +14,9 @@ Build the assembly from the osuBMParser project or download it [here](https://gi
 To parse a beatmap (.osu) file, use the following code:
 
 ```Beatmap beatmap = new Beatmap(string path);```
+
 or
+
 ```Beatmap beatmap = new Beatmap(string path, OsuFileSection sectionsToParse)```
 
 The Beatmap object will contain all properties found on this webpage (including lists with HitObjects, TimingPoints, etc.):
