@@ -174,6 +174,10 @@ namespace osuBMParser
                         if (property.PropertyType == typeof(Boolean))
                         {
                             property.SetValue(beatmap, toBool(tokens[1].Trim()));
+                        } else if (property.PropertyType == typeof(Int32))
+                        {
+                            string[] intTokens = tokens[1].Split('.');
+                            property.SetValue(beatmap, Convert.ChangeType(intTokens[0].Trim(), property.PropertyType));
                         }
                         else
                         {

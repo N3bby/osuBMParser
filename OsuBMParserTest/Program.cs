@@ -23,7 +23,7 @@ namespace OsuBMParserTest
             Form1 form = new Form1();
 
             //Beatmap beatmap = new Beatmap("//192.168.0.79/razacx/home/razacx/osubeatmaps/6687 Hatsune Miku - World is Mine/Hatsune Miku - World is Mine (tom800510) [Pudding Lover!!].osu");
-            Beatmap beatmap = new Beatmap("//192.168.0.79/razacx/home/razacx/osubeatmaps/83560 DJ S3RL - T-T-Techno (feat Jesskah)/DJ S3RL - T-T-Techno (feat. Jesskah) (nold_1702) [Technonationalism].osu");
+            Beatmap beatmap = new Beatmap("C:/Users/Razacx/Desktop/KYARY PAMYU PAMYU - Ninjya Re Bang Bang (Peachtrees) [Insane].osu");
             ((PropertyGrid)form.Controls.Find("propertyGrid1", true)[0]).SelectedObject = beatmap;
 
             Application.Run(form);
